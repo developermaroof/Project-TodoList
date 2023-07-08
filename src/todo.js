@@ -1,9 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
+
+// get localStorage data back
+
+const getLocalData = () => {
+  const lists = localStorage.getItem("mytodolist");
+
+  if (lists) {
+    return JSON.parse(lists);
+  } else {
+    return [];
+  }
+};
+
+// ------------------
 
 const Todo = () => {
   const [inputdata, setInputData] = useState("");
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(getLocalData());
 
   // add the items function
 
@@ -15,17 +29,30 @@ const Todo = () => {
         id: new Date().getTime().toString(),
         name: inputdata,
       };
-      setItems([...items, inputdata]);
+      setItems([...items, myNewInputData]);
       setInputData("");
     }
   };
 
   // how to delete items section
   const deleteItem = (index) => {
-    const updatedItem = items.filter((curElem) => {
+    const updatedItems = items.filter((curElem) => {
       return curElem.id !== index;
     });
+    setItems(updatedItems);
   };
+
+  // remove all the elements
+
+  const removeAll = () => {
+    setItems([]);
+  };
+
+  // adding localStorage
+
+  useEffect(() => {
+    localStorage.setItem("mytodolist", JSON.stringify(items));
+  }, [items]);
 
   return (
     <>
@@ -66,7 +93,11 @@ const Todo = () => {
           {/* remove all button */}
 
           <div className="showItems">
-            <button className="btn  effect04" data-sm-link-text="Remove All">
+            <button
+              className="btn  effect04"
+              data-sm-link-text="Remove All"
+              onClick={removeAll}
+            >
               <span>CHECK ALL</span>
             </button>
           </div>
